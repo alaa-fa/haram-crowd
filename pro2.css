@@ -1,0 +1,155 @@
+body {
+    background-color: #121212;
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: auto; /* Allow scrolling */
+    position: relative;
+}
+
+.custom-bg {
+    background-color: #7d6e5d;
+}
+
+.text-custom {
+    color: #7d6e5d;
+}
+
+.rounded-button {
+    border-radius: 999px;
+}
+
+.btn-custom:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Light background color on hover */
+    color: #f8f9fa; /* Lighter text color */
+}
+
+.list-group-item-custom {
+    background-color: #1f1f1f;
+    color: white;
+    border: none;
+}
+
+.list-group-item-custom:hover {
+    background-color: #7d6e5d;
+    color: white;
+}
+
+.border-custom {
+    border-color: #7d6e5d;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.grid-item {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.grid-item-large {
+    grid-column: span 2;
+}
+
+/* Battery Indicator */
+.battery-indicator {
+    width: 100px;
+    height: 50px;
+    border: 2px solid white;
+    border-radius: 5px;
+    position: relative;
+    margin: 0 auto 10px;
+}
+
+.battery-indicator::before {
+    content: '';
+    width: 10px;
+    height: 20px;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    transform: translateY(-50%);
+    border-radius: 2px;
+}
+
+.battery-level {
+    height: 100%;
+    background-color: #2ac92a96; /* Default to green */
+    transition: width 0.3s ease-in-out;
+}
+
+/* Styling the battery level based on data-crowd attribute */
+.battery-indicator[data-crowd="10"] .battery-level {
+    background-color: #00ff3cb2; /* Green */
+    width: 10%;
+}
+
+.battery-indicator[data-crowd="30"] .battery-level {
+    background-color: #2ac92a96; /* Light Green */
+    width: 30%;
+}
+
+.battery-indicator[data-crowd="55"] .battery-level {
+    background-color: #fbcd039a; /* Yellow */
+    width: 50%;
+}
+
+.battery-indicator[data-crowd="70"] .battery-level {
+    background-color: #FFA500; /* Orange */
+    width: 70%;
+}
+
+.battery-indicator[data-crowd="91"] .battery-level {
+    background-color: #da0a0aa8; /* Red */
+    width: 90%;
+}
+
+/* Background styling */
+.background {
+    position: fixed; /* Change to fixed to keep it in place */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('images/alharam.gif') no-repeat center center;
+    background-size: cover;
+    filter: blur(10px); /* Adjust blur radius as needed */
+    z-index: -1; /* Place behind other content */
+}
+
+/* Ensure other content is visible */
+.content {
+    position: relative;
+    z-index: 1;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Additional text styling */
+.text-sm {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.text-lg {
+    font-size: 24px;
+}
+
+.text-bold-big {
+    font-weight: bold;
+    font-size: 32px; /* Adjust size as needed */
+}
