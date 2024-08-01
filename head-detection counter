@@ -1,0 +1,94 @@
+import streamlit as st
+import torch
+from ultralytics import YOLO
+from PIL import Image
+import cv2
+import numpy as np
+import tempfile
+
+# Load the model
+model_path = r"C:\Users\user\Downloads\best (2).pt"
+model = YOLO(model_path)
+
+# Streamlit app
+st.title("Person Detection")
+
+option = st.selectbox("Select Option", ("Photo", "Video"))
+
+if option == "Photo":
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption='Uploaded Image.', use_column_width=True)
+        
+        results = model.track(np.array(image), persist=True, conf=0.23)
+        
+        detected_classes = results[0].boxes.cls.cpu().numpy()
+        detected_boxes = results[0].boxes.xyxy.cpu().numpy()
+        person_class_id = 1
+        person_count = sum(1 for cls in detected_classes if int(cls) == person_class_id)
+        
+        st.write(f"Number of people detected: {person_count}")
+        
+        # Draw bounding boxes without confidence scores
+        frame = np.array(image)
+        for box in detected_boxes:
+            x1, y1, x2, y2 = map(int, box)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+        
+        st.image(frame, caption='Processed Image.', use_column_width=True, channels="BGR")
+
+elif option == "Video":
+    uploaded_file = st.file_uploader("Choose a video...", type=["mp4", "mov", "avi"])
+    
+    if uploaded_file is not None:
+        tfile = tempfile.NamedTemporaryFile(delete=False) 
+        tfile.write(uploaded_file.read())
+        
+        cap = cv2.VideoCapture(tfile.name)
+        
+        if not cap.isOpened():
+            st.error("Error opening video file")
+        else:
+            resize_factor = 0.5  # Resize factor for frames
+            frame_skip = 2  # Process every 2nd frame
+            
+            frame_count = 0
+            total_person_count = 0
+            total_frames = 0
+
+            stframe = st.empty()
+            
+            while cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                
+                frame_count += 1
+                
+                if frame_count % frame_skip != 0:
+                    continue
+                
+                # Resize the frame
+                frame = cv2.resize(frame, (0, 0), fx=resize_factor, fy=resize_factor)
+                
+                results = model.track(frame, persist=True, conf=0.01)
+                
+                detected_classes = results[0].boxes.cls.cpu().numpy()
+                person_class_id = 1
+                person_count = sum(1 for cls in detected_classes if int(cls) == person_class_id)
+                
+                total_person_count += person_count
+                total_frames += 1
+                
+                # Draw bounding boxes without confidence scores
+                for box in results[0].boxes.xyxy.cpu().numpy():
+                    x1, y1, x2, y2 = map(int, box)
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                
+                stframe.image(frame, channels="BGR", use_column_width=True)
+            
+            cap.release()
+            average_person_count = total_person_count / total_frames
+            st.write(f"Average number of people detected per frame: {average_person_count}")
